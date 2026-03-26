@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Editor, { OnMount } from '@monaco-editor/react';
 import mjml2html from 'mjml-browser';
-
+import { sendTestEmail } from '../actions/sendEmail';
 
 // --- 1. テンプレートデータの定義 ---
 const MJML_TEMPLATES = [
@@ -28,7 +28,7 @@ const MJML_TEMPLATES = [
       </mj-column>
     </mj-section>
     </mj-body>
-</mjml>`
+</mjml>`,
   },
   {
     name: '📝 2カラム記事（画像＋テキスト）',
@@ -42,7 +42,7 @@ const MJML_TEMPLATES = [
     <mj-text font-weight="bold" font-size="18px">記事タイトル（SEO/スパム意識）</mj-text>
     <mj-text font-size="14px">説明文がここに入ります。テキスト比率を稼ぐために、ある程度の文字数を用意しましょう。具体的な情報を盛り込むと到達率が上がります。</mj-text>
   </mj-column>
-</mj-section>`
+</mj-section>`,
   },
   {
     name: '🔘 強調ボタン',
@@ -50,7 +50,7 @@ const MJML_TEMPLATES = [
     description: 'クリック率の高いデザイン',
     code: `<mj-button background-color="#f45e43" color="white" href="#" font-weight="bold" font-size="18px" border-radius="4px" inner-padding="15px 30px">
   詳しく見る（CTA）
-</mj-button>`
+</mj-button>`,
   },
   {
     name: '🚫 フッター（特商法/配信停止）',
@@ -64,16 +64,31 @@ const MJML_TEMPLATES = [
       <a href="#" style="color:#ffffff; text-decoration:underline;">配信停止はこちら</a>
     </mj-text>
   </mj-column>
-</mj-section>`
-  }
+</mj-section>`,
+  },
 ];
-
 
 export default function MjmlEditorPage() {
   const [mjml, setMjml] = useState(MJML_TEMPLATES[0].code); // 初期値は基本レイアウト
   const [html, setHtml] = useState('');
   const [error, setError] = useState<string | null>(null);
-  
+
+  const [testEmail, setTestEmail] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSendTest = async () => {
+    if (!testEmail) return alert('送信先を入力してね');
+
+    setIsSending(true);
+    const result = await sendTestEmail(testEmail, html);
+    setIsSending(false);
+
+    if (result.success) {
+      alert('テストメールを送信しました！受信ボックスを確認して。');
+    } else {
+      alert(`エラー: ${result.error}`);
+    }
+  };
 
   // Monaco Editorのエディタインスタンスを保持するRef
   const editorRef = useRef<any>(null);
@@ -88,7 +103,7 @@ export default function MjmlEditorPage() {
     if (editorRef.current) {
       const editor = editorRef.current;
       const selection = editor.getSelection();
-      
+
       // カーソル位置または選択範囲を取得
       const range = {
         startLineNumber: selection.startLineNumber,
@@ -98,10 +113,8 @@ export default function MjmlEditorPage() {
       };
 
       // executeEditsを使って、アンドゥ（Ctrl+Z）履歴を残しつつ挿入
-      editor.executeEdits("my-source", [
-        { range, text: code, forceMoveMarkers: true },
-      ]);
-      
+      editor.executeEdits('my-source', [{ range, text: code, forceMoveMarkers: true }]);
+
       // 挿入後にエディタにフォーカスを戻す（連続挿入のため）
       editor.focus();
     }
@@ -121,7 +134,7 @@ export default function MjmlEditorPage() {
         setHtml(convertedHtml);
       }
     } catch (e) {
-      setError("変換エラーが発生しました");
+      setError('変換エラーが発生しました');
     }
   }, [mjml]);
 
@@ -147,25 +160,34 @@ export default function MjmlEditorPage() {
       {/* Header */}
       <header className="flex items-center justify-between border-b border-slate-700 p-4">
         <h1 className="text-xl font-bold tracking-tighter">MAIL-FORGE v1.0</h1>
-        <div className="flex gap-2">
-          <button onClick={copyToClipboard} className="rounded bg-slate-700 px-4 py-2 hover:bg-slate-600 transition">Copy HTML</button>
-          <button onClick={downloadHtml} className="rounded bg-blue-600 px-4 py-2 hover:bg-blue-500 transition font-bold">Download HTML</button>
+        <div className="flex items-center gap-4">
+          {/* テスト送信フォーム */}
+          <div className="flex bg-slate-800 rounded border border-slate-600 overflow-hidden">
+            <input type="email" placeholder="test@example.com" className="bg-transparent px-3 py-1 text-sm outline-none w-48" value={testEmail} onChange={(e) => setTestEmail(e.target.value)} />
+            <button onClick={handleSendTest} disabled={isSending} className="bg-slate-700 px-3 py-1 text-xs font-bold hover:bg-slate-600 border-l border-slate-600 disabled:opacity-50">
+              {isSending ? 'Sending...' : 'Test Send'}
+            </button>
+          </div>
+          <div className="h-6 w-[1px] bg-slate-700" /> {/* 区切り線 */}
+          <div className="flex gap-2">
+            <button onClick={copyToClipboard} className="rounded bg-slate-700 px-4 py-2 hover:bg-slate-600 transition">
+              Copy HTML
+            </button>
+            <button onClick={downloadHtml} className="rounded bg-blue-600 px-4 py-2 hover:bg-blue-500 transition font-bold">
+              Download HTML
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Main Body */}
       <div className="flex flex-1 overflow-hidden">
-        
         {/* --- 3. テンプレート一覧サイドバー --- */}
         <aside className="w-64 border-r border-slate-700 bg-slate-800 p-3 overflow-y-auto">
           <h2 className="text-sm font-semibold text-slate-400 mb-3 tracking-widest uppercase">Snippets</h2>
           <div className="space-y-2">
             {MJML_TEMPLATES.map((tmpl) => (
-              <button
-                key={tmpl.id}
-                onClick={() => insertTemplate(tmpl.code)}
-                className="w-full text-left p-3 rounded-lg bg-slate-700 hover:bg-blue-900/50 border border-slate-600 hover:border-blue-700 transition group"
-              >
+              <button key={tmpl.id} onClick={() => insertTemplate(tmpl.code)} className="w-full text-left p-3 rounded-lg bg-slate-700 hover:bg-blue-900/50 border border-slate-600 hover:border-blue-700 transition group">
                 <div className="font-medium text-white group-hover:text-blue-300 transition text-sm">{tmpl.name}</div>
                 <div className="text-xs text-slate-400 mt-1">{tmpl.description}</div>
               </button>
@@ -190,11 +212,7 @@ export default function MjmlEditorPage() {
 
           {/* Right: Preview (iframe) */}
           <div className="w-1/2 bg-white relative">
-            {error && (
-              <div className="absolute top-0 left-0 right-0 bg-red-500/90 p-2 text-xs text-white z-10 font-mono">
-                ⚠️ {error}
-              </div>
-            )}
+            {error && <div className="absolute top-0 left-0 right-0 bg-red-500/90 p-2 text-xs text-white z-10 font-mono">⚠️ {error}</div>}
             <iframe srcDoc={html} title="Preview" className="h-full w-full border-none" />
           </div>
         </div>
