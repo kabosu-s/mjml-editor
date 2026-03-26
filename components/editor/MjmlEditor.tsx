@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor, { OnMount } from '@monaco-editor/react';
 import mjml2html from 'mjml-browser';
-import { sendTestEmail } from '../actions/sendEmail';
+import { sendTestEmail } from '@/actions/send-email';
 
 // --- 1. テンプレートデータの定義 ---
 const MJML_TEMPLATES = [

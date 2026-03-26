@@ -21,7 +21,7 @@ const MJML_TEMPLATES = [
       </mj-column>
     </mj-section>
     </mj-body>
-</mjml>`
+</mjml>`,
   },
   {
     name: '📝 2カラム記事（画像＋テキスト）',
@@ -35,7 +35,7 @@ const MJML_TEMPLATES = [
     <mj-text font-weight="bold" font-size="18px">記事タイトル（SEO/スパム意識）</mj-text>
     <mj-text font-size="14px">説明文がここに入ります。テキスト比率を稼ぐために、ある程度の文字数を用意しましょう。具体的な情報を盛り込むと到達率が上がります。</mj-text>
   </mj-column>
-</mj-section>`
+</mj-section>`,
   },
   {
     name: '🔘 強調ボタン',
@@ -43,7 +43,7 @@ const MJML_TEMPLATES = [
     description: 'クリック率の高いデザイン',
     code: `<mj-button background-color="#f45e43" color="white" href="#" font-weight="bold" font-size="18px" border-radius="4px" inner-padding="15px 30px">
   詳しく見る（CTA）
-</mj-button>`
+</mj-button>`,
   },
   {
     name: '🚫 フッター（特商法/配信停止）',
@@ -57,6 +57,6 @@ const MJML_TEMPLATES = [
       <a href="#" style="color:#ffffff; text-decoration:underline;">配信停止はこちら</a>
     </mj-text>
   </mj-column>
-</mj-section>`
-  }
+</mj-section>`,
+  },
 ];

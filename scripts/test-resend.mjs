@@ -8,10 +8,10 @@ dotenv.config({ path: '.env.local' });
 const resend = new Resend(process.env.RESEND_API_KEY);
 
 async function runTest() {
-  console.log("🚀 テスト送信を開始します...");
+  console.log('🚀 テスト送信を開始します...');
 
   if (!process.env.RESEND_API_KEY) {
-    console.error("❌ エラー: RESEND_API_KEY が .env.local に見当たりません。");
+    console.error('❌ エラー: RESEND_API_KEY が .env.local に見当たりません。');
     return;
   }
 
@@ -30,13 +30,13 @@ async function runTest() {
     });
 
     if (error) {
-      console.error("❌ Resend APIからエラーが返されました:", error);
+      console.error('❌ Resend APIからエラーが返されました:', error);
     } else {
-      console.log("✅ 送信成功！ ID:", data.id);
-      console.log("📥 受信ボックス（または迷惑メールフォルダ）を確認してね。");
+      console.log('✅ 送信成功！ ID:', data.id);
+      console.log('📥 受信ボックス（または迷惑メールフォルダ）を確認してね。');
     }
   } catch (err) {
-    console.error("💥 通信中に致命的なエラーが発生しました:", err);
+    console.error('💥 通信中に致命的なエラーが発生しました:', err);
   }
 }
 
