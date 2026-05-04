@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MAIL-FORGE v1.0
 
-## Getting Started
+MAIL-FORGEは、MJMLを利用してレスポンシブなメールテンプレートを高速に作成・検証するためのエディタツールです。
+Monaco Editorによる快適なコーディング環境と、Resendを利用したテスト送信機能を備えています。
 
-First, run the development server:
+## 主な機能
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **MJML リアルタイムプレビュー**: 左側でMJMLを編集すると、右側に即座にHTMLプレビューが表示されます。
+- **スニペット機能**: よく使うレイアウトやボタン、フッターなどのコードをサイドバーからワンクリックで挿入できます。
+- **テスト送信**: プレビュー中の内容をそのまま指定したメールアドレスに送信し、実機確認が可能です。
+- **HTML エクスポート**: 作成したMJMLをHTMLとしてダウンロード、またはクリップボードにコピーできます。
+
+## セットアップ
+
+### 1. 環境変数の設定
+
+プロジェクトのルートディレクトリに `.env.local` ファイルを作成し、ResendのAPIキーを設定してください。
+
+```env
+RESEND_API_KEY=re_your_api_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. インストールと起動
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# 依存関係のインストール
+npm install
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# 開発サーバーの起動
+npm run dev
+```
 
-## Learn More
+[http://localhost:3000](http://localhost:3000) にアクセスしてエディタを開きます。
 
-To learn more about Next.js, take a look at the following resources:
+### (オプション) 疎通確認スクリプト
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+APIキーが正しく設定されているか、CLIから直接確認できます。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+node scripts/test-resend.mjs
+```
 
-## Deploy on Vercel
+## 使い方
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **コーディング**: 左側のエディタにMJMLを記述します。
+2. **スニペット活用**: 左サイドバーの「Snippets」からテンプレートパーツを選択すると、エディタのカーソル位置にコードが挿入されます。
+3. **テスト送信**: ヘッダーにある入力欄に送信先メールアドレスを入力し、「Test Send」ボタンをクリックします。
+   - ※ デフォルトでは `onboarding@resend.dev` から送信されます。
+4. **HTMLの取得**: 右上の「Copy HTML」でクリップボードへ、「Download HTML」でファイルとして保存します。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 技術スタック
+
+- **Framework**: Next.js 16 (App Router)
+- **Editor**: Monaco Editor (@monaco-editor/react)
+- **Engine**: MJML (mjml-browser)
+- **Email Service**: Resend
+- **Styling**: Tailwind CSS
+
+## 注意事項
+
+- 現状、テスト送信の送信元は `onboarding@resend.dev` に固定されています。独自のドメインから送信する場合は `actions/send-email.ts` を修正してください。
